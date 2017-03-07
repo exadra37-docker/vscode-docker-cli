@@ -14,4 +14,4 @@
 
 
 curl -L https://github.com/exadra37-bash/bin-package-installer/raw/0.0.1.0/src/installer.sh | \
-    bash -s -- -n exadra37-dockerize -p visual-studio-code -t last-stable-release -s vsc:src/visual-studio-code.sh
+    bash -s -- -n exadra37-dockerize -p visual-studio-code -t last-stable-release -s vscode:src/visual-studio-code.sh

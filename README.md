@@ -25,13 +25,13 @@ bash -c "$(wget  https://gitlab.com/exadra37-dockerize/visual-studio-code/raw/ma
 
 ## How to Use Visual Studio Code from a Docker Image
 
-The default Host dir shared with the VSC Container is `/home/$USER/Developer/Workspace`, that we can override at any time.
+The default Host dir shared with the VSCode Container is `/home/$USER/Developer/Workspace`, that we can override at any time.
 
 
 #### Run With Defaults
 
 ```bash
-vsc
+vscode
 ```
 
 #### See Help
@@ -39,7 +39,7 @@ vsc
 Check how to use it at any time...
 
 ```bash
-vsc -h
+vscode -h
 ```
 
 #### Run With Custom Developer Workspace
@@ -48,7 +48,7 @@ By default `/home/$USER/Developer/Workspace` on Host is mapped to Container `/ho
  in the Host we want to map into the Container, like:
 
 ```bash
-vsc -d /absolute/path/in/host
+vscode -d /absolute/path/in/host
 ```
 
 #### Rebuild Docker Image
@@ -56,7 +56,7 @@ vsc -d /absolute/path/in/host
 To have the Ubuntu inside the Docker Image up to date we should rebuild the image every week.
 
 ```bash
-vsc -r
+vscode -r
 ```
 
 #### How to Debug Docker Container for Visual Studio Code
@@ -66,5 +66,5 @@ For trouble shouting Visual Studio Code installation we may need to go inside th
 To help us on that, when starting the container, the exact command will be printed and should look like:
 
 ```bash
-sudo docker exec -it VSC_1486504665 bash
+sudo docker exec -it VSCode_1486504665 bash
 ```
