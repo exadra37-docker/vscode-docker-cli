@@ -19,17 +19,19 @@
     script_dir=$(dirname $(readlink -f $0))
     
     source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
 
 
 ########################################################################################################################
 # Functions
 ########################################################################################################################
 
+
     function run()
     {
-        Setup_X11_Server_Authority
+        Setup_X11_Server_Authority "${x11_authority_file}"
 
-        printf "\nTo Debug the Docker Container for Visual Studio Code:\n"
+        printf "\nTo obtain a Shell inside the Docker Container:\n"
         printf "$ vscode shell ${container_name}\n"
 
         if Docker_Image_Does_Not_Exist "${image_name}"
@@ -43,13 +45,15 @@
         # Additional to the above tutorial:
         #   * I set the container --workdir in the host to persist visual-studio-code settings and cache across restarts
         #   * I Also map my developer folder in the host to the container.
-        #   * x11_socket and x11_authority only have ready access to the Host, instead of ready and write.
+        #   * x11_socket and x11_authority_file only have ready access to the Host, instead of ready and write.
         printf "\nRun Visual Studio Code from a Docker Container...\n"
 
+        printf "\nHOST DEVLOPER WORKSPACE: ${host_developer_workspace}\n"
+        
         sudo docker run \
                 -it \
                 --rm \
-                --env="XAUTHORITY=${x11_authority}" \
+                --env="XAUTHORITY=${x11_authority_file}" \
                 --env="DISPLAY" \
                 --user="${USER}" \
                 --name="${container_name}" \
@@ -57,7 +61,7 @@
                 --volume="${host_vsc_extensions_dir}":/home/"${USER}"/.vscode \
                 --volume="${host_developer_workspace}":/home/"${USER}"/Developer \
                 --volume="${x11_socket}":"${x11_socket}":ro \
-                --volume="${x11_authority}":"${x11_authority}":ro \
+                --volume="${x11_authority_file}":"${x11_authority_file}":ro \
                 "${image_name}" \
                 "./home/${USER}/.container/entrypoint.sh"
     }
@@ -115,20 +119,6 @@
         build
     }
 
-    # @link http://wiki.ros.org/docker/Tutorials/GUI#The_isolated_way
-    function Setup_X11_Server_Authority()
-    {
-        #local x11_authority="${1}"
-        
-        printf "\nSetup X11 Server...\n"
-
-        # Setup X11 server authentication
-        touch "${x11_authority}" &&
-        xauth nlist "${DISPLAY}" | sed -e 's/^..../ffff/' | xauth -f "${x11_authority}" nmerge -
-
-    }
-
-
     function Create_Folder_If_Not_Exists()
     {
         local folder="${1}"
@@ -161,6 +151,8 @@
 
     git_user_email="exadra37@gmail.com"
 
+    count_shifts=0
+
 
 ########################################################################################################################
 # Arguments
@@ -168,14 +160,20 @@
 
     while getopts ':p:w:h' flag; do
       case "${flag}" in
-        p) profile="${OPTARG}" ;;
-        w) host_developer_workspace="${OPTARG}" ;;
+        p) profile="${OPTARG}"; ((count_shifts++))  ;;
+        w) host_developer_workspace="${OPTARG}"; ((count_shifts++)) ;;
         h) cat "${script_path}"/../docs/help.txt; exit 0; ;;
         \?) printf "\noption -$OPTARG is not supported.\n"; exit 1 ;;
         :) printf "\noption -$OPTARG requires a value.\n"; exit 1 ;;
       esac
     done
 
+    while [ ${count_shifts} -gt 0 ]
+        do
+            shift
+            shift
+            ((count_shifts--))
+    done
 
 ########################################################################################################################
 # Variables Assignments
@@ -187,7 +185,7 @@
 
     host_vsc_config_dir="${host_vsc_dir}"/Code
 
-    x11_authority="${host_vsc_dir}"/x11_authority
+    x11_authority_file="${host_vsc_dir}"/x11_authority_"${timestamp}"
 
 
 ########################################################################################################################
@@ -210,3 +208,5 @@
     fi
 
     printf "\n---> Visual Studio Code running from a Docker Container - by Exadra37 <---\n"
+
+    rm -rf "${x11_authority_file}"
