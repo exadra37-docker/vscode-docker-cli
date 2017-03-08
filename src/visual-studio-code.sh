@@ -18,9 +18,10 @@
 
     script_dir=$(dirname $(readlink -f $0))
 
-    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/docker-container-shell/src/functions/shell.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
 
 
 ########################################################################################################################
@@ -70,17 +71,6 @@
 
         rm -rf "${x11_authority_file}"
 
-    }
-
-    function shell()
-    {
-        local shell_into_container="${1}"
-
-        sudo docker exec \
-                --user="${USER}" \
-                -it \
-                "${shell_into_container}" \
-                zsh
     }
 
     function Create_Folder_If_Not_Exists()
@@ -168,7 +158,6 @@
 
     # vscode
     # vscode run
-
     if [ -z "${1}" ] || [ "run" == "${1}" ]
         then
             printf "\n---> Visual Studio Code running from a Docker Container - by Exadra37 <---\n"
@@ -190,6 +179,26 @@
     if [ "rebuild" == "${1}" ]
         then
             rebuild "${image_name}" "${build_context}"
+
+            exit 0
+    fi
+
+
+    # vscode shell <shell_into_container> [shell_name] [user]
+    #
+    # Examples:
+    #   * vscode shell vscode1489000501
+    #   * vscode shell vscode1489000501 zsh
+    #   * vscode shell vscode1489000501 bash root
+    if [ "shell" == "${1}" ]
+        then
+            shell_into_container=${2}
+
+            shell_name=${3:-zsh}
+
+            shell_user="${4:-$USER}"
+
+            shell "${shell_into_container}" "${shell_name}" "${shell_user}"
 
             exit 0
     fi
