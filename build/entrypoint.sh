@@ -13,15 +13,29 @@
 # @link    Twitter:  https://twitter.com/Exadra37
 
 
-printf "\nUpdate Installed Extensions From Docker Image...\n"
+########################################################################################################################
+# Parameters
+########################################################################################################################
 
-# Copy back all extensions installed by Docker build command, as per Dockerfile instructions.
-# We need this trick because when the Container is started we map the Container .vscode dir to a Host one,
-#  so that when the Container is removed, we don't loose any installed extensions during the use of Visual Studio Code.
-cp -uR ~/.container/.vscode ~/.
+    git_user="${1}"
+    git_user_email="${2}"
 
-printf "\nStarting Visual Studio Code...\n"
 
-#sudo chsh -s /usr/bin/zsh
+########################################################################################################################
+# Execution
+########################################################################################################################
 
-code -w ~/Developer
+    printf "\nUpdate Installed Extensions From Docker Image...\n"
+
+    # Copy back all extensions installed by Docker build command, as per Dockerfile instructions.
+    # We need this trick because when the Container is started we map the Container .vscode dir to a Host one,
+    #  so that when the Container is removed, we don't loose any installed extensions during the use of Visual Studio Code.
+    cp -uR ~/.container/.vscode ~/.
+
+    # Setup Git
+    git config --global user.name "${git_user}" && \
+    git config --global user.email "${git_user_email}" && \
+
+    printf "\nStarting Visual Studio Code...\n"
+
+    code -w ~/Developer

@@ -17,9 +17,10 @@
 ########################################################################################################################
 
     script_dir=$(dirname $(readlink -f $0))
-    
+
     source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
 
 
 ########################################################################################################################
@@ -29,6 +30,8 @@
 
     function run()
     {
+        printf "\nSetup X11 Server Authority...\n"
+
         Setup_X11_Server_Authority "${x11_authority_file}"
 
         printf "\nTo obtain a Shell inside the Docker Container:\n"
@@ -36,7 +39,7 @@
 
         if Docker_Image_Does_Not_Exist "${image_name}"
             then
-                build "${image_name}"
+                build "${image_name}" "${build_context}"
         fi
 
         # Run Container with X11 authentication and using same user in container and host
@@ -49,7 +52,7 @@
         printf "\nRun Visual Studio Code from a Docker Container...\n"
 
         printf "\nHOST DEVLOPER WORKSPACE: ${host_developer_workspace}\n"
-        
+
         sudo docker run \
                 -it \
                 --rm \
@@ -63,7 +66,10 @@
                 --volume="${x11_socket}":"${x11_socket}":ro \
                 --volume="${x11_authority_file}":"${x11_authority_file}":ro \
                 "${image_name}" \
-                "./home/${USER}/.container/entrypoint.sh"
+                "./home/${USER}/.container/entrypoint.sh" "${git_user}" "${git_user_email}"
+
+        rm -rf "${x11_authority_file}"
+
     }
 
     function shell()
@@ -77,37 +83,11 @@
                 zsh
     }
 
-    function build()
-    {
-        # local image_name="${1}"
-
-        # local script_path="${2}"
-
-        # local git_user="${3}"
-
-        # local git_user_email="${4}"
-
-        local uid=$( id -u )
-
-        local gid=$( id -g )
-
-        sudo docker build \
-                --no-cache \
-                --build-arg HOST_USER="${USER}" \
-                --build-arg GIT_USER="${git_user}" \
-                --build-arg GIT_USER_EMAIL="${git_user_email}" \
-                --build-arg HOST_UID="${uid}" \
-                --build-arg HOST_GID="${gid}" \
-                -t "${image_name}" \
-                "${script_path}"/../build
-    }
-
-
     function rebuild()
     {
         # local image_name="${2}"
 
-        # local script_path="${3}"
+        # local script_dir="${3}"
 
         # local git_user="${4}"
 
@@ -115,7 +95,7 @@
 
         sudo docker rmi "${image_name}"
 
-        #build "${image_name}" "${script_path}" "${git_user}" "${git_user_email}"
+        #build "${image_name}" "${script_dir}" "${git_user}" "${git_user_email}"
         build
     }
 
@@ -131,7 +111,7 @@
 # Variables Defaults
 ########################################################################################################################
 
-    script_path=$(dirname $(readlink -f $0))
+    script_dir=$(dirname $(readlink -f $0))
 
     profile='default'
 
@@ -140,6 +120,8 @@
     host_developer_workspace="${PWD}"
 
     image_name="exadra37-dockerize/visual-studio-code"
+
+    build_context="${script_dir}"/../build
 
     timestamp=$( date +"%s" )
 
@@ -162,7 +144,7 @@
       case "${flag}" in
         p) profile="${OPTARG}"; ((count_shifts++))  ;;
         w) host_developer_workspace="${OPTARG}"; ((count_shifts++)) ;;
-        h) cat "${script_path}"/../docs/help.txt; exit 0; ;;
+        h) cat "${script_dir}"/../docs/help.txt; exit 0; ;;
         \?) printf "\noption -$OPTARG is not supported.\n"; exit 1 ;;
         :) printf "\noption -$OPTARG requires a value.\n"; exit 1 ;;
       esac
@@ -200,13 +182,26 @@
 # Execution
 ########################################################################################################################
 
-    "${@}"
+    # vscode
+    # vscode run
 
-    if [ -z "${1}" ]
+    if [ -z "${1}" ] || [ "run" == "${1}" ]
         then
+            printf "\n---> Visual Studio Code running from a Docker Container - by Exadra37 <---\n"
+
             run
+
+            exit 0
     fi
 
-    printf "\n---> Visual Studio Code running from a Docker Container - by Exadra37 <---\n"
+    # vscode build
+    if [ "build" == "${1}" ]
+        then
+            build "${image_name}" "${build_context}"
 
-    rm -rf "${x11_authority_file}"
+            exit 0
+    fi
+
+    # vscode <options> <commands>
+    "${@}"
+

@@ -20,8 +20,6 @@ ARG HOST_USER="${HOST_USER}"
 ARG HOST_UID="${HOST_UID}"
 ARG HOST_GID="${HOST_GID}"
 ARG VSC_DEB_FILE="vsc.deb"
-ARG GIT_USER="${GIT_USER}"
-ARG GIT_USER_EMAIL="${GIT_USER_EMAIL}"
 
 RUN apt-get update && \
     apt-get -y upgrade && \
@@ -63,10 +61,6 @@ RUN apt-get update && \
     chmod 0440 /etc/sudoers.d/"${HOST_USER}" && \
     usermod  --uid "${HOST_UID}" "${HOST_USER}" && \
     groupmod --gid "${HOST_GID}" "${HOST_USER}" && \
-
-    # Setup Git
-    su "${HOST_USER}" -c 'git config --global user.name "${GIT_USER}"' && \
-    su "${HOST_USER}" -c 'git config --global user.email "${GIT_USER_EMAIL}"' && \
 
     # PHP 7 Profile
     su "${HOST_USER}" -c "printf 'Yes\n' | /usr/bin/code --install-extension felixfbecker.php-pack" && \
