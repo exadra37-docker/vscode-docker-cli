@@ -83,22 +83,6 @@
                 zsh
     }
 
-    function rebuild()
-    {
-        # local image_name="${2}"
-
-        # local script_dir="${3}"
-
-        # local git_user="${4}"
-
-        # local git_user_email="${5}"
-
-        sudo docker rmi "${image_name}"
-
-        #build "${image_name}" "${script_dir}" "${git_user}" "${git_user_email}"
-        build
-    }
-
     function Create_Folder_If_Not_Exists()
     {
         local folder="${1}"
@@ -198,6 +182,14 @@
     if [ "build" == "${1}" ]
         then
             build "${image_name}" "${build_context}"
+
+            exit 0
+    fi
+
+    # vscode rebuild
+    if [ "rebuild" == "${1}" ]
+        then
+            rebuild "${image_name}" "${build_context}"
 
             exit 0
     fi
