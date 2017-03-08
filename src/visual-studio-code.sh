@@ -1,5 +1,4 @@
 #!/bin/bash
-#!/bin/bash
 # @package exadra37-dockerized/visual-studio-code
 # @link    https://gitlab.com/u/exadra37-docker/visual-studio-code
 # @since   2017/03/05
@@ -13,6 +12,14 @@
 # @link    Linkedin: https://uk.linkedin.com/in/exadra37
 # @link    Twitter:  https://twitter.com/Exadra37
 
+########################################################################################################################
+# Sourcing
+########################################################################################################################
+
+    script_dir=$(dirname $(readlink -f $0))
+    
+    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.sh
+
 
 ########################################################################################################################
 # Functions
@@ -20,15 +27,14 @@
 
     function run()
     {
-        #Setup_X11_Server "${x11_authority}"
-        Setup_X11_Server
+        Setup_X11_Server_Authority
 
         printf "\nTo Debug the Docker Container for Visual Studio Code:\n"
         printf "$ vscode shell ${container_name}\n"
 
-        if Is_Not_Present_Docker_Image
+        if Docker_Image_Does_Not_Exist "${image_name}"
             then
-                build
+                build "${image_name}"
         fi
 
         # Run Container with X11 authentication and using same user in container and host
@@ -109,16 +115,17 @@
         build
     }
 
-    function Setup_X11_Server()
+    # @link http://wiki.ros.org/docker/Tutorials/GUI#The_isolated_way
+    function Setup_X11_Server_Authority()
     {
-        # Setup X11 server authentication
-        # @link http://wiki.ros.org/docker/Tutorials/GUI#The_isolated_way
         #local x11_authority="${1}"
-
+        
         printf "\nSetup X11 Server...\n"
 
+        # Setup X11 server authentication
         touch "${x11_authority}" &&
         xauth nlist "${DISPLAY}" | sed -e 's/^..../ffff/' | xauth -f "${x11_authority}" nmerge -
+
     }
 
 
@@ -129,12 +136,6 @@
         [ -d "$folder" ] || mkdir -p "${folder}"
     }
 
-    function Is_Not_Present_Docker_Image()
-    {
-        # local image_name="${1}"
-
-        [ -z $( sudo docker images -q "${image_name}" ) ] && return 0 || return 1
-    }
 
 ########################################################################################################################
 # Variables Defaults
