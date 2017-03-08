@@ -24,4 +24,4 @@ printf "\nStarting Visual Studio Code...\n"
 
 #sudo chsh -s /usr/bin/zsh
 
-code -w
+code -w ~/Developer
