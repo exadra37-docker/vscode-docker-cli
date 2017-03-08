@@ -18,7 +18,7 @@
 
     script_dir=$(dirname $(readlink -f $0))
     
-    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.sh
+    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
 
 
 ########################################################################################################################
