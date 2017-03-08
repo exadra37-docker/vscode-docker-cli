@@ -22,6 +22,7 @@
     source "${script_dir}"/../vendor/exadra37-bash/docker-container-shell/src/functions/shell.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/folders-manipulator/src/functions/create-folder.func.sh
 
 
 ########################################################################################################################
@@ -73,13 +74,6 @@
 
     }
 
-    function Create_Folder_If_Not_Exists()
-    {
-        local folder="${1}"
-
-        [ -d "$folder" ] || mkdir -p "${folder}"
-    }
-
 
 ########################################################################################################################
 # Variables Defaults
@@ -116,8 +110,8 @@
 
     while getopts ':p:w:h' flag; do
       case "${flag}" in
-        p) profile="${OPTARG}"; ((count_shifts++))  ;;
-        w) host_developer_workspace="${OPTARG}"; ((count_shifts++)) ;;
+        p) profile="${OPTARG}"; count_shifts=$((${count_shifts} + 1)) ;;
+        w) host_developer_workspace="${OPTARG}"; count_shifts=$((${count_shifts} + 1)) ;;
         h) cat "${script_dir}"/../docs/help.txt; exit 0; ;;
         \?) printf "\noption -$OPTARG is not supported.\n"; exit 1 ;;
         :) printf "\noption -$OPTARG requires a value.\n"; exit 1 ;;
@@ -130,6 +124,7 @@
             shift
             ((count_shifts--))
     done
+
 
 ########################################################################################################################
 # Variables Assignments
@@ -148,8 +143,8 @@
 # Validations
 ########################################################################################################################
 
-    Create_Folder_If_Not_Exists "${host_vsc_config_dir}"
-    Create_Folder_If_Not_Exists "${host_vsc_extensions_dir}"
+    Create_Folder_If_Does_Not_Exist "${host_vsc_config_dir}"
+    Create_Folder_If_Does_Not_Exist "${host_vsc_extensions_dir}"
 
 
 ########################################################################################################################
@@ -183,7 +178,6 @@
             exit 0
     fi
 
-
     # vscode shell <shell_into_container> [shell_name] [user]
     #
     # Examples:
@@ -205,4 +199,3 @@
 
     # vscode <options> <commands>
     "${@}"
-
