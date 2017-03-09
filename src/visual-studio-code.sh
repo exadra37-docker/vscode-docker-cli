@@ -1,6 +1,6 @@
 #!/bin/bash
-# @package exadra37-dockerized/visual-studio-code
-# @link    https://gitlab.com/u/exadra37-docker/visual-studio-code
+# @package exadra37-dockerize/visual-studio-code
+# @link    https://gitlab.com/u/exadra37-dockerize/visual-studio-code
 # @since   2017/03/05
 # @license MIT
 # @author  Exadra37(Paulo Silva) <exadra37ingmailpointcom>
@@ -19,6 +19,7 @@
     script_dir=$(dirname $(readlink -f $0))
 
     source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
+    source "${script_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/docker-container-shell/src/functions/shell.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
@@ -29,15 +30,11 @@
 # Functions
 ########################################################################################################################
 
-
     function run()
     {
-        printf "\nSetup X11 Server Authority...\n"
+        Print_Text "Setup X11 Server Authority..." 37 # light grey
 
         Setup_X11_Server_Authority "${x11_authority_file}"
-
-        printf "\nTo obtain a Shell inside the Docker Container:\n"
-        printf "$ vscode shell ${container_name}\n"
 
         if Docker_Image_Does_Not_Exist "${image_name}"
             then
@@ -51,9 +48,11 @@
         #   * I set the container --workdir in the host to persist visual-studio-code settings and cache across restarts
         #   * I Also map my developer folder in the host to the container.
         #   * x11_socket and x11_authority_file only have ready access to the Host, instead of ready and write.
-        printf "\nRun Visual Studio Code from a Docker Container...\n"
+        Print_Text "Run Visual Studio Code from a Docker Container..." 93 # light yellow
 
-        printf "\nHOST DEVLOPER WORKSPACE: ${host_developer_workspace}\n"
+        Print_Text "HOST DEVLOPER WORKSPACE: ${host_developer_workspace}" 97 # default white
+
+        Print_Text_With_Label "Shell Into Container" "vscode shell ${container_name}"
 
         sudo docker run \
                 -it \
@@ -71,7 +70,6 @@
                 "./home/${USER}/.container/entrypoint.sh" "${git_user}" "${git_user_email}"
 
         rm -rf "${x11_authority_file}"
-
     }
 
 
@@ -155,7 +153,7 @@
     # vscode run
     if [ -z "${1}" ] || [ "run" == "${1}" ]
         then
-            printf "\n---> Visual Studio Code running from a Docker Container - by Exadra37 <---\n"
+            Print_Text "Visual Studio Code running from a Docker Container - by Exadra37"
 
             run
 
