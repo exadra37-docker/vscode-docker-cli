@@ -77,8 +77,6 @@
 # Variables Defaults
 ########################################################################################################################
 
-    script_dir=$(dirname $(readlink -f $0))
-
     profile='default'
 
     image_action=""
