@@ -134,7 +134,7 @@ set -e
     # vscode build
     if [ "build" == "${1}" ]
         then
-            build "${image_name}" "${build_context}"
+            Docker_Build "${docker_image}" "${build_context}"
 
             exit 0
     fi
@@ -142,7 +142,7 @@ set -e
     # vscode rebuild
     if [ "rebuild" == "${1}" ]
         then
-            rebuild "${image_name}" "${build_context}"
+            Docker_Rebuild "${docker_image}" "${build_context}"
 
             exit 0
     fi
