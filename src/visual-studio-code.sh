@@ -12,17 +12,18 @@
 # @link    Linkedin: https://uk.linkedin.com/in/exadra37
 # @link    Twitter:  https://twitter.com/Exadra37
 
+set -e
+
 ########################################################################################################################
 # Sourcing
 ########################################################################################################################
 
     script_dir=$(dirname $(readlink -f $0))
 
+    source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-run.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/docker-container-shell/src/functions/shell.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/x11-server/src/functions/x11-server-authority.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/docker-validator/src/functions/validate-images.func.sh
     source "${script_dir}"/../vendor/exadra37-bash/folders-manipulator/src/functions/create-folder.func.sh
 
 
@@ -32,44 +33,51 @@
 
     function run()
     {
-        Print_Text "Setup X11 Server Authority..." 37 # light grey
+        ### ARGUMENTS ###
 
-        Setup_X11_Server_Authority "${x11_authority_file}"
+            local docker_image="${1}"
 
-        if Docker_Image_Does_Not_Exist "${image_name}"
-            then
-                build "${image_name}" "${build_context}"
-        fi
+            local build_context="${2}"
 
-        # Run Container with X11 authentication and using same user in container and host
-        # @link http://wiki.ros.org/docker/Tutorials/GUI#The_isolated_way
-        #
-        # Additional to the above tutorial:
-        #   * I set the container --workdir in the host to persist visual-studio-code settings and cache across restarts
-        #   * I Also map my developer folder in the host to the container.
-        #   * x11_socket and x11_authority_file only have ready access to the Host, instead of ready and write.
-        Print_Text "Run Visual Studio Code from a Docker Container..." 93 # light yellow
+            local host_developer_workspace="${3}"
 
-        Print_Text "HOST DEVLOPER WORKSPACE: ${host_developer_workspace}" 97 # default white
+            local profile="${4}"
 
-        Print_Text_With_Label "Shell Into Container" "vscode shell ${container_name}"
 
-        sudo docker run \
-                -it \
-                --rm \
-                --env="XAUTHORITY=${x11_authority_file}" \
-                --env="DISPLAY" \
-                --user="${USER}" \
-                --name="${container_name}" \
-                --volume="${host_vsc_config_dir}":/home/"${USER}"/.config/Code \
-                --volume="${host_vsc_extensions_dir}":/home/"${USER}"/.vscode \
-                --volume="${host_developer_workspace}":/home/"${USER}"/Developer \
-                --volume="${x11_socket}":"${x11_socket}":ro \
-                --volume="${x11_authority_file}":"${x11_authority_file}":ro \
-                "${image_name}" \
-                "./home/${USER}/.container/entrypoint.sh" "${git_user}" "${git_user_email}"
+        ### ASSIGNMENTS ###
 
-        rm -rf "${x11_authority_file}"
+            local git_user="Exadra37"
+
+            local git_user_email="exadra37@gmail.com"
+
+            local host_vsc_dir=/home/"${USER}"/.dockerize/visual-studio-code/profiles/"${profile}"
+
+            local host_vsc_extensions_dir="${host_vsc_dir}"/.vscode
+
+            local host_vsc_config_dir="${host_vsc_dir}"/Code
+
+            local command="./home/${USER}/.container/entrypoint.sh"
+
+            local arguments="${git_user},${git_user_email}"
+
+            local volumes="${host_vsc_config_dir}:/home/${USER}/.config/Code"
+            local volumes="${volumes},${host_vsc_extensions_dir}:/home/${USER}/.vscode"
+            local volumes="${volumes},${host_developer_workspace}:/home/${USER}/Developer"
+
+        
+        ### VALIDATIONS ###
+
+            Create_Folder_If_Does_Not_Exist "${host_vsc_config_dir}"
+            Create_Folder_If_Does_Not_Exist "${host_vsc_extensions_dir}"
+
+
+        ### EXECUTION ###
+
+            Print_Text "Visual Studio Code running from a Docker Container - by Exadra37"
+
+            Print_Text "HOST DEVLOPER WORKSPACE: ${host_developer_workspace}" 97 # default white
+        
+            Docker_Run "${docker_image}" "${build_context}" "${volumes}" "${command}" "${arguments}" 
     }
 
 
@@ -79,23 +87,11 @@
 
     profile='default'
 
-    image_action=""
-
     host_developer_workspace="${PWD}"
 
-    image_name="exadra37-dockerize/visual-studio-code"
+    docker_image="exadra37-dockerize/visual-studio-code"
 
     build_context="${script_dir}"/../build
-
-    timestamp=$( date +"%s" )
-
-    container_name="vscode${timestamp}"
-
-    x11_socket=/tmp/.X11-unix
-
-    git_user="Exadra37"
-
-    git_user_email="exadra37@gmail.com"
 
     count_shifts=0
 
@@ -123,27 +119,6 @@
 
 
 ########################################################################################################################
-# Variables Assignments
-########################################################################################################################
-
-    host_vsc_dir=/home/"${USER}"/.dockerize/visual-studio-code/profiles/"${profile}"
-
-    host_vsc_extensions_dir="${host_vsc_dir}"/.vscode
-
-    host_vsc_config_dir="${host_vsc_dir}"/Code
-
-    x11_authority_file="${host_vsc_dir}"/x11_authority_"${timestamp}"
-
-
-########################################################################################################################
-# Validations
-########################################################################################################################
-
-    Create_Folder_If_Does_Not_Exist "${host_vsc_config_dir}"
-    Create_Folder_If_Does_Not_Exist "${host_vsc_extensions_dir}"
-
-
-########################################################################################################################
 # Execution
 ########################################################################################################################
 
@@ -151,9 +126,7 @@
     # vscode run
     if [ -z "${1}" ] || [ "run" == "${1}" ]
         then
-            Print_Text "Visual Studio Code running from a Docker Container - by Exadra37"
-
-            run
+            run "${docker_image}" "${build_context}" "${host_developer_workspace}" "${profile}"
 
             exit 0
     fi
