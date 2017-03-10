@@ -2,7 +2,7 @@
 # @package exadra37-dockerize/visual-studio-code
 # @link    https://gitlab.com/u/exadra37-dockerize/visual-studio-code
 # @since   2017/03/05
-# @license MIT
+# @license GPL-3.0
 # @author  Exadra37(Paulo Silva) <exadra37ingmailpointcom>
 #
 # Social Links:
@@ -18,67 +18,13 @@ set -e
 # Sourcing
 ########################################################################################################################
 
-    script_dir=$(dirname $(readlink -f $0))
+    ebvsc_src_dir=$(dirname $(readlink -f $0))
 
-    source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-run.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/docker-container-shell/src/functions/shell.func.sh
-    source "${script_dir}"/../vendor/exadra37-bash/folders-manipulator/src/functions/create-folder.func.sh
-
-
-########################################################################################################################
-# Functions
-########################################################################################################################
-
-    function run()
-    {
-        ### ARGUMENTS ###
-
-            local docker_image="${1}"
-
-            local build_context="${2}"
-
-            local host_developer_workspace="${3}"
-
-            local profile="${4}"
-
-
-        ### ASSIGNMENTS ###
-
-            local git_user="Exadra37"
-
-            local git_user_email="exadra37@gmail.com"
-
-            local host_vsc_dir=/home/"${USER}"/.dockerize/visual-studio-code/profiles/"${profile}"
-
-            local host_vsc_extensions_dir="${host_vsc_dir}"/.vscode
-
-            local host_vsc_config_dir="${host_vsc_dir}"/Code
-
-            local command="./home/${USER}/.container/entrypoint.sh"
-
-            local arguments="${git_user},${git_user_email}"
-
-            local volumes="${host_vsc_config_dir}:/home/${USER}/.config/Code"
-            local volumes="${volumes},${host_vsc_extensions_dir}:/home/${USER}/.vscode"
-            local volumes="${volumes},${host_developer_workspace}:/home/${USER}/Developer"
-
-        
-        ### VALIDATIONS ###
-
-            Create_Folder_If_Does_Not_Exist "${host_vsc_config_dir}"
-            Create_Folder_If_Does_Not_Exist "${host_vsc_extensions_dir}"
-
-
-        ### EXECUTION ###
-
-            Print_Text "Visual Studio Code running from a Docker Container - by Exadra37"
-
-            Print_Text "HOST DEVLOPER WORKSPACE: ${host_developer_workspace}" 97 # default white
-        
-            Docker_Run "${docker_image}" "${build_context}" "${volumes}" "${command}" "${arguments}" 
-    }
+    source "${ebvsc_src_dir}"/functions/vscode-run.func.sh
+    source "${ebvsc_src_dir}"/functions/vscode-build.func.sh
+    source "${ebvsc_src_dir}"/functions/vscode-rebuild.func.sh
+    source "${ebvsc_src_dir}"/functions/vscode-shell.func.sh
+    source "${ebvsc_src_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
 
 
 ########################################################################################################################
@@ -88,10 +34,6 @@ set -e
     profile='default'
 
     host_developer_workspace="${PWD}"
-
-    docker_image="exadra37-dockerize/visual-studio-code"
-
-    build_context="${script_dir}"/../build
 
     count_shifts=0
 
@@ -104,9 +46,9 @@ set -e
       case "${flag}" in
         p) profile="${OPTARG}"; count_shifts=$((${count_shifts} + 1)) ;;
         w) host_developer_workspace="${OPTARG}"; count_shifts=$((${count_shifts} + 1)) ;;
-        h) cat "${script_dir}"/../docs/help.txt; exit 0; ;;
-        \?) printf "\noption -$OPTARG is not supported.\n"; exit 1 ;;
-        :) printf "\noption -$OPTARG requires a value.\n"; exit 1 ;;
+        h) cat "${ebvsc_src_dir}"/../docs/help.txt; exit 0; ;;
+        \?) Print_Text_With_Label "Option -$OPTARG is not supported... See Help" "vscode -h" 41; exit 1 ;;
+        :) Print_Text_With_Label "Option -$OPTARG requires a value... See Help" "vscode -h" 41; exit 1 ;;
       esac
     done
 
@@ -126,7 +68,7 @@ set -e
     # vscode run
     if [ -z "${1}" ] || [ "run" == "${1}" ]
         then
-            run "${docker_image}" "${build_context}" "${host_developer_workspace}" "${profile}"
+            VSCode_Run "${profile}" "${host_developer_workspace}"
 
             exit 0
     fi
@@ -134,7 +76,7 @@ set -e
     # vscode build
     if [ "build" == "${1}" ]
         then
-            Docker_Build "${docker_image}" "${build_context}"
+            VSCode_Build
 
             exit 0
     fi
@@ -142,7 +84,7 @@ set -e
     # vscode rebuild
     if [ "rebuild" == "${1}" ]
         then
-            Docker_Rebuild "${docker_image}" "${build_context}"
+            VSCode_Rebuild
 
             exit 0
     fi
@@ -155,16 +97,12 @@ set -e
     #   * vscode shell vscode1489000501 bash root
     if [ "shell" == "${1}" ]
         then
-            shell_into_container=${2}
 
-            shell_name=${3:-zsh}
-
-            shell_user="${4:-$USER}"
-
-            shell "${shell_into_container}" "${shell_name}" "${shell_user}"
+            VSCode_Shell "${@}"
 
             exit 0
     fi
 
-    # vscode <options> <commands>
-    "${@}"
+    Print_Text_With_Label "Whoops... Try help" "vscode -h" 41 # Red Label
+
+    exit 1
