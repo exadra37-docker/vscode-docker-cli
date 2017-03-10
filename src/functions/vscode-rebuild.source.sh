@@ -20,10 +20,10 @@ set -e
 
     ebvsc_functions_dir=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.func.sh
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-rebuild.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.source.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-rebuild.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
 
 
 ########################################################################################################################

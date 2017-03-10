@@ -20,11 +20,11 @@ set -e
 
     ebvsc_functions_dir=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.func.sh
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-run.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/folders-manipulator/src/functions/create-folder.func.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.source.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-run.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/folders-manipulator/src/functions/create-folder.source.sh
 
 
 ########################################################################################################################
@@ -63,11 +63,11 @@ set -e
 
             local _command="./home/${USER}/.container/entrypoint.sh"
 
-            local _arguments="${_git_user},${_git_user_email}"
+            local _arguments="${_git_user} ${_git_user_email}"
 
-            local _volumes="${_host_vscode_config_dir}:/home/${USER}/.config/Code"
-            local _volumes="${_volumes},${_host_vscode_extensions_dir}:/home/${USER}/.vscode"
-            local _volumes="${_volumes},${_host_developer_workspace}:/home/${USER}/Developer"
+            local _volumes="--volume=${_host_vscode_config_dir}:/home/${USER}/.config/Code"
+            local _volumes="${_volumes} --volume=${_host_vscode_extensions_dir}:/home/${USER}/.vscode"
+            local _volumes="${_volumes} --volume=${_host_developer_workspace}:/home/${USER}/Developer"
 
 
         ### VALIDATIONS ###

@@ -20,23 +20,20 @@ set -e
 
     ebvsc_functions_dir=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.func.sh
-    source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-build.func.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/docker-exec/src/functions/docker-container-user-shell.source.sh
 
 
 ########################################################################################################################
 # Functions
 ########################################################################################################################
 
-    function VSCode_Build()
+    function VSCode_Shell()
     {
-        local _docker_image_name; GET_VAR_DOCKER_IMAGE_NAME _docker_image_name
+        local _shell_into_container=${2}
 
-        local _docker_build_context; GET_VAR_DOCKER_BUILD_CONTEXT _docker_build_context
+        local _shell_name=${3:-zsh}
 
-        Docker_Build "${_docker_image_name}" "${_docker_build_context}"
+        local _shell_user="${4:-$USER}"
 
-        Print_Text_With_Label "To Run Visual Studio Code" "vscode"
+        Docker_Container_User_Shell "${_shell_into_container}" "${_shell_name}" "${_shell_user}"
     }

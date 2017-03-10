@@ -20,11 +20,11 @@ set -e
 
     ebvsc_src_dir=$(dirname $(readlink -f $0))
 
-    source "${ebvsc_src_dir}"/functions/vscode-run.func.sh
-    source "${ebvsc_src_dir}"/functions/vscode-build.func.sh
-    source "${ebvsc_src_dir}"/functions/vscode-rebuild.func.sh
-    source "${ebvsc_src_dir}"/functions/vscode-shell.func.sh
-    source "${ebvsc_src_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.func.sh
+    source "${ebvsc_src_dir}"/functions/vscode-run.source.sh
+    source "${ebvsc_src_dir}"/functions/vscode-build.source.sh
+    source "${ebvsc_src_dir}"/functions/vscode-rebuild.source.sh
+    source "${ebvsc_src_dir}"/functions/vscode-shell.source.sh
+    source "${ebvsc_src_dir}"/../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
 
 
 ########################################################################################################################
