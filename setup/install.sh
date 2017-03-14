@@ -1,13 +1,13 @@
 #!/bin/bash
 # @package exadra37-dockerize/visual-studio-code
 # @link    https://gitlab.com/u/exadra37-dockerize/visual-studio-code
-# @since   2017/03/05
+# @since   5 March 2017
 # @license MIT
 # @author  Exadra37(Paulo Silva) <exadra37ingmailpointcom>
 #
 # Social Links:
 # @link    Auhthor:  https://exadra37.com
-# @link    Github:   https://gitlab.com/Exadra37
+# @link    Gitlab:   https://gitlab.com/Exadra37
 # @link    Github:   https://github.com/Exadra37
 # @link    Linkedin: https://uk.linkedin.com/in/exadra37
 # @link    Twitter:  https://twitter.com/Exadra37
