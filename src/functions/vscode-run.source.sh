@@ -21,6 +21,7 @@ set -e
     ebvsc_functions_dir=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
     source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.source.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-tag.source.sh
     source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.source.sh
     source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-run.source.sh
     source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
@@ -37,7 +38,11 @@ set -e
 
             local _docker_image_name; GET_VAR_DOCKER_IMAGE_NAME _docker_image_name
 
-            local _docker_build_context GET_VAR_DOCKER_BUILD_CONTEXT _docker_build_context
+            local _docker_image_tag; GET_VAR_DOCKER_IMAGE_TAG _docker_image_tag
+
+            local _docker_build_context; GET_VAR_DOCKER_BUILD_CONTEXT _docker_build_context
+
+            local _container_user="${USER}"
 
             local _cli_name="vscode"
 
@@ -82,7 +87,7 @@ set -e
 
             Print_Text "HOST DEVLOPER WORKSPACE: ${_host_developer_workspace}" 97 # default white
 
-            Docker_Run "${_docker_image_name}" "${_docker_build_context}" "${_cli_name}" "${_volumes}" "${_command}" "${_arguments}"
+            Docker_Run "${_docker_image_name}" "${_docker_image_tag}" "${_docker_build_context}" "${_cli_name}" "${_volumes}" "${_command}" "${_arguments}"
 
             Print_Text_With_Label "To Run With Another Profile" "vscode -p profile-name"
 

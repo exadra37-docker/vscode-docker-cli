@@ -21,6 +21,7 @@ set -e
     ebvsc_functions_dir=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
     source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.source.sh
+    source "${ebvsc_functions_dir}"/vars/get-var-docker-image-tag.source.sh
     source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.source.sh
     source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-user-rebuild.source.sh
     source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
@@ -34,9 +35,11 @@ set -e
     {
         local _docker_image_name; GET_VAR_DOCKER_IMAGE_NAME _docker_image_name
 
+        local _docker_image_tag; GET_VAR_DOCKER_IMAGE_TAG _docker_image_tag
+
         local _docker_build_context; GET_VAR_DOCKER_BUILD_CONTEXT _docker_build_context
 
-        Docker_Rebuild "${_docker_image_name}" "${_docker_build_context}"
+        Docker_User_Rebuild "${_docker_image_name}" "${_docker_image_tag}" "${_docker_build_context}"
 
         Print_Text_With_Label "To Run Visual Studio Code" "vscode"
     }
