@@ -22,7 +22,7 @@ set -e
     {
         local __var_to_return__=${1?}
 
-        local __docker_image_name__='exadra37-dockerize/visual-studio-code'
+        local __docker_image_name__='exadra37/visual-studio-code'
 
         eval $__var_to_return__="'${__docker_image_name__}'"
     }

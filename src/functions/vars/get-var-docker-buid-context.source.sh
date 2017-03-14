@@ -21,10 +21,10 @@ set -e
     function GET_VAR_DOCKER_BUILD_CONTEXT()
     {
         local __var_to_return__=${1?}
-        
+
         local __script_dir__=$(cd "$( dirname "${BASH_SOURCE}" )" && pwd )
 
-        local __docker_build_context__="${__script_dir__}/../../../build"
+        local __docker_build_context__="${__script_dir__}/../../../vendor/exadra37-docker-images/visual-studio-code/build"
 
         eval $__var_to_return__="'${__docker_build_context__}'"
     }
