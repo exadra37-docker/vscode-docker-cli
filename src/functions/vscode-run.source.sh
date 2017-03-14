@@ -60,19 +60,19 @@ set -e
 
         ### VARIABLES COMPOSITION ###
 
-            local _host_vscode_dir=/home/"${USER}"/.dockerize/visual-studio-code/profiles/"${_profile}"
+            local _host_vscode_dir=/home/"$USER"/.dockerize/visual-studio-code/"${_container_user}"/.profiles/"${_profile}"
 
             local _host_vscode_extensions_dir="${_host_vscode_dir}"/.vscode
 
             local _host_vscode_config_dir="${_host_vscode_dir}"/Code
 
-            local _command="./home/${USER}/.container/entrypoint.sh"
+            local _command="./home/${_container_user}/.container/entrypoint.sh"
 
             local _arguments="${_git_user} ${_git_user_email}"
 
-            local _volumes="--volume=${_host_vscode_config_dir}:/home/${USER}/.config/Code"
-            local _volumes="${_volumes} --volume=${_host_vscode_extensions_dir}:/home/${USER}/.vscode"
-            local _volumes="${_volumes} --volume=${_host_developer_workspace}:/home/${USER}/Developer"
+            local _volumes="--volume=${_host_vscode_config_dir}:/home/${_container_user}/.config/Code"
+            local _volumes="${_volumes} --volume=${_host_vscode_extensions_dir}:/home/${_container_user}/.vscode"
+            local _volumes="${_volumes} --volume=${_host_developer_workspace}:/home/${_container_user}/Developer"
 
 
         ### VALIDATIONS ###
