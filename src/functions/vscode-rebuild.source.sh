@@ -22,7 +22,7 @@ set -e
 
     source "${ebvsc_functions_dir}"/vars/get-var-docker-image-name.source.sh
     source "${ebvsc_functions_dir}"/vars/get-var-docker-buid-context.source.sh
-    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-rebuild.source.sh
+    source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/dockerize-app/src/functions/docker-user-rebuild.source.sh
     source "${ebvsc_functions_dir}"/../../vendor/exadra37-bash/pretty-print/src/functions/raw-color-print.source.sh
 
 
