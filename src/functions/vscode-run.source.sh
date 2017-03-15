@@ -66,7 +66,7 @@ set -e
 
             local _host_vscode_config_dir="${_host_vscode_dir}"/Code
 
-            local _command="./home/${_container_user}/.container/entrypoint.sh"
+            local _command="./home/${_container_user}/.container/vscode/entrypoint.sh"
 
             local _arguments="${_git_user} ${_git_user_email}"
 
